@@ -599,39 +599,8 @@ class Model(nn.Module):
         custom = {"imgsz": self.model.args["imgsz"], "batch": 1, "data": None, "verbose": False}  # method defaults
         args = {**self.overrides, **custom, **kwargs, "mode": "export"}  # highest priority args on the right
         return Exporter(overrides=args, _callbacks=self.callbacks)(model=self.model)
-
-    def train(
-        self,
-        trainer=None,
-        **kwargs,
-    ):
-        """
-        Trains the model using the specified dataset and training configuration.
-
-        This method facilitates model training with a range of customizable settings and configurations. It supports
-        training with a custom trainer or the default training approach defined in the method. The method handles
-        different scenarios, such as resuming training from a checkpoint, integrating with Ultralytics HUB, and
-        updating model and configuration after training.
-
-        When using Ultralytics HUB, if the session already has a loaded model, the method prioritizes HUB training
-        arguments and issues a warning if local arguments are provided. It checks for pip updates and combines default
-        configurations, method-specific defaults, and user-provided arguments to configure the training process. After
-        training, it updates the model and its configurations, and optionally attaches metrics.
-
-        Args:
-            trainer (BaseTrainer, optional): An instance of a custom trainer class for training the model. If None, the
-                method uses a default trainer. Defaults to None.
-            **kwargs (any): Arbitrary keyword arguments representing the training configuration. These arguments are
-                used to customize various aspects of the training process.
-
-        Returns:
-            (dict | None): Training metrics if available and training is successful; otherwise, None.
-
-        Raises:
-            AssertionError: If the model is not a PyTorch model.
-            PermissionError: If there is a permission issue with the HUB session.
-            ModuleNotFoundError: If the HUB SDK is not installed.
-        """
+    
+    def set_trainer(self,trainer=None,**kwargs):
         self._check_is_pytorch_model()
         if hasattr(self.session, "model") and self.session.model.id:  # Ultralytics HUB session with loaded model
             if any(kwargs):
@@ -670,6 +639,40 @@ class Model(nn.Module):
                     pass
 
         self.trainer.hub_session = self.session  # attach optional HUB session
+
+
+    def train(
+        self,
+        trainer=None,
+        **kwargs,
+    ):
+        """
+        Trains the model using the specified dataset and training configuration.
+
+        This method facilitates model training with a range of customizable settings and configurations. It supports
+        training with a custom trainer or the default training approach defined in the method. The method handles
+        different scenarios, such as resuming training from a checkpoint, integrating with Ultralytics HUB, and
+        updating model and configuration after training.
+
+        When using Ultralytics HUB, if the session already has a loaded model, the method prioritizes HUB training
+        arguments and issues a warning if local arguments are provided. It checks for pip updates and combines default
+        configurations, method-specific defaults, and user-provided arguments to configure the training process. After
+        training, it updates the model and its configurations, and optionally attaches metrics.
+
+        Args:
+            trainer (BaseTrainer, optional): An instance of a custom trainer class for training the model. If None, the
+                method uses a default trainer. Defaults to None.
+            **kwargs (any): Arbitrary keyword arguments representing the training configuration. These arguments are
+                used to customize various aspects of the training process.
+
+        Returns:
+            (dict | None): Training metrics if available and training is successful; otherwise, None.
+
+        Raises:
+            AssertionError: If the model is not a PyTorch model.
+            PermissionError: If there is a permission issue with the HUB session.
+            ModuleNotFoundError: If the HUB SDK is not installed.
+        """
         self.trainer.train()
         # Update model and cfg after training
         if RANK in {-1, 0}:

@@ -21,6 +21,9 @@ class YOLO(Model):
         else:
             # Continue with default YOLO initialization
             super().__init__(model=model, task=task, verbose=verbose)
+    
+    def get_dataloader(self, dataset_path, batch_size=16, rank=0, mode="train", nncf=False):
+        return self.trainer.get_dataloader(dataset_path, batch_size, rank, mode, nncf)
 
     @property
     def task_map(self):

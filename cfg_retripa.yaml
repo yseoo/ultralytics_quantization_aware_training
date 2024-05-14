@@ -1,0 +1,40 @@
+#Dataset should be organized as:
+#
+#dataset/
+#   ├── images/
+#   │     ├── train/
+#   │     └── val/
+#   └── labels/
+#         ├── train/
+#         └── val/
+#         
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+path: /home/hinard/Conveyor-Waste-Detection/dataset/ # dataset root dir
+train:
+  - images/train_retripa
+val:
+  - images/val_retripa
+
+# Classes
+names:
+#  0: Combination
+  0: Metal
+  1: Plastic
+  2: Glass
+  3: Cardboard
+  4: Paper
+  5: Organic
+  6: Wood
+  7: e_Waste
+#  9: Other
+  8: Rubble
+#  11: Plastic_PET
+#  12: Plastic_HDPE
+#  13: Steel
+#  14: Aluminium
+#  15: Copper
+#  16: Fabric
+#  17: Plastic_bag
+
+
